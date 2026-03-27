@@ -22,6 +22,27 @@ FAQ_INDEX_SCHEMA = {
     ]
 }
 
+CACHE_INDEX_SCHEMA = {
+    "index": {
+        "name": "cache_index",
+        "prefix": "cache:"
+    },
+    "fields": [
+        {"name": "answer", "type": "text"},
+        {
+            "name": "embedding",
+            "type": "vector",
+            "attrs": {
+                "dims": 384,
+                "algorithm": "flat",
+                "distance_metric": "cosine"
+            }
+        }
+    ]
+}
 
 def get_faq_index(redis_url: str = "redis://localhost:6379") -> SearchIndex:
     return SearchIndex.from_dict(FAQ_INDEX_SCHEMA, redis_url=redis_url)
+
+def get_semantic_index(redis_url: str = "redis://localhost:6379") -> SearchIndex:
+    return SearchIndex.from_dict(CACHE_INDEX_SCHEMA, redis_url=redis_url)

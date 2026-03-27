@@ -4,7 +4,7 @@ from sentence_transformers import SentenceTransformer
 from redisvl.index import SearchIndex
 
 from faq_data import FAQ_DOCS
-from faq_index import get_faq_index
+from faq_index import get_faq_index, get_semantic_index
 
 import numpy as np
 
@@ -18,7 +18,7 @@ def build_embeddings(texts: List[str]) -> List[list]:
 
 def main():
     # 1) Connect / create index
-    index: SearchIndex = get_faq_index("redis://localhost:6379")
+    index: SearchIndex = get_faq_index()
 
     # Drop index if it exists (to make reruns easy)
     if index.exists():
@@ -46,9 +46,13 @@ def main():
             "embedding": vec
         })
 
-    # 4) Add to Redis
-    index.load(docs)
-    print(f"Ingested {len(docs)} FAQ documents into Redis.")
+   
+    semantic_index: SearchIndex = get_semantic_index()
+    
+    if semantic_index.exists():
+        semantic_index.delete()
+
+    semantic_index.create()
 
 
 if __name__ == "__main__":
